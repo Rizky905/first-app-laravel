@@ -1,0 +1,39 @@
+version: "3"
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: test-laravel-php
+    volumes:
+      - ".:/app"
+    networks:
+      - testlaravel
+
+  nginx:
+    image: nginx:latest
+    container_name: test-laravel-nginx
+    restart: unless-stopped
+    ports:
+      - 8074:80
+    volumes:
+      - "./nginx:/etc/nginx/conf.d/"
+      - ".:/app"
+    networks:
+      - testlaravel
+
+  mysql:
+    image: mysql:5.6
+    container_name: test-laravel-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: test-laravel
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - "3306:3306"
+    networks:
+      - testlaravel
+
+networks:
+  testlaravel:
+    driver: bridge
